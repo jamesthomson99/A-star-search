@@ -21,7 +21,7 @@ def draw_board(screen, board, last_click_time, current_state):
         for col_index, cell in enumerate(row):
             x = col_index * (CELL_SIZE+ CELL_BORDER)
             y = row_index * (CELL_SIZE + CELL_BORDER)
-
+  
             cell_rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
             cell_border_size = CELL_BORDER
 
@@ -29,17 +29,24 @@ def draw_board(screen, board, last_click_time, current_state):
             if current_state == State.CREATE_OBSTACLES or current_state == State.CHOOSE_START or current_state == State.CHOOSE_END:
                 # If mouse is hovering over cell
                 if cell_rect.collidepoint(mouse_x, mouse_y):
+                    cell_border_size = 2 * CELL_BORDER
                     # If mouse is clicked
                     if mouse_click[0] and current_time - last_click_time > 0.5:
+                        valid_click_occured = False
                         if current_state == State.CREATE_OBSTACLES:
                             cell.toggle_is_obstacle()
-                        elif current_state == State.CHOOSE_START:
+                            valid_click_occured = True
+                        elif current_state == State.CHOOSE_START and not cell.is_obstacle:
                             cell.toggle_is_start_point()
-                        else:
+                            valid_click_occured = True
+                        elif current_state == State.CHOOSE_END and not cell.is_obstacle and not cell.is_start_point:
                             cell.toggle_is_end_point()
-                        last_click_time = current_time
-                        clicked_cell_coords = (mouse_x, mouse_y)
-                    cell_border_size = 2 * CELL_BORDER
+                            valid_click_occured = True
+                        # Check if a valid click on a cell occured and note the coordinates of the click
+                        if valid_click_occured:
+                            last_click_time = current_time
+                            clicked_cell_coords = (mouse_x, mouse_y)
+    
                 # Color cells based on their status
                 if cell.is_start_point:
                     cell.color = RED
