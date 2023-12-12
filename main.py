@@ -1,9 +1,15 @@
 from tile import Tile
 from states import State
+from navigation import a_star 
 from constants import *
 import pygame
 import sys
 import time
+
+
+# Function to reload program 
+def reload():
+    main()
 
 
 # Function to draw board on screen with pygame
@@ -31,7 +37,7 @@ def draw_board(screen, board, last_click_time, current_state):
                 if cell_rect.collidepoint(mouse_x, mouse_y):
                     cell_border_size = 2 * CELL_BORDER
                     # If mouse is clicked
-                    if mouse_click[0] and current_time - last_click_time > 0.5:
+                    if mouse_click[0] and current_time - last_click_time > 0.3:
                         valid_click_occured = False
                         if current_state == State.CREATE_OBSTACLES:
                             cell.toggle_is_obstacle()
@@ -110,6 +116,8 @@ def main():
                     running = False
                 if event.key == pygame.K_RETURN and current_state == State.CREATE_OBSTACLES:
                     current_state = State.CHOOSE_START
+                if event.key == pygame.K_r:
+                    reload()
 
         # Draw board and render info bar text
         screen.fill(WHITE)
