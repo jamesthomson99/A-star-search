@@ -7,9 +7,13 @@ class Tile:
         self.f = None
         self.is_start_point = False
         self.is_end_point = False
+        self.is_obstacle = False
 
-    def toggle_start_point(self):
+    def toggle_is_start_point(self):
         self.is_start_point = not self.is_start_point
 
-    def toggle_end_point(self):
+    def toggle_is_end_point(self):
         self.is_end_point = not self.is_end_point
+
+    def toggle_is_obstacle(self):
+        self.is_obstacle = not self.is_obstacle

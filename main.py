@@ -26,16 +26,29 @@ def draw_board(screen, board, last_click_time, current_state):
             cell_border_size = CELL_BORDER
 
             # Check for mouse hover/click on cell and style as necessary
-            if cell_rect.collidepoint(mouse_x, mouse_y):
-                if mouse_click[0] and current_time - last_click_time > 0.5:
-                    cell.toggle_start_point()
-                    last_click_time = current_time
-                    clicked_cell_coords = (mouse_x, mouse_y)
-                cell_border_size = 2 * CELL_BORDER
-            if cell.is_start_point:
-                cell.color = BLUE
-            else:
-                cell.color = WHITE
+            if current_state == State.CREATE_OBSTACLES or current_state == State.CHOOSE_START or current_state == State.CHOOSE_END:
+                # If mouse is hovering over cell
+                if cell_rect.collidepoint(mouse_x, mouse_y):
+                    # If mouse is clicked
+                    if mouse_click[0] and current_time - last_click_time > 0.5:
+                        if current_state == State.CREATE_OBSTACLES:
+                            cell.toggle_is_obstacle()
+                        elif current_state == State.CHOOSE_START:
+                            cell.toggle_is_start_point()
+                        else:
+                            cell.toggle_is_end_point()
+                        last_click_time = current_time
+                        clicked_cell_coords = (mouse_x, mouse_y)
+                    cell_border_size = 2 * CELL_BORDER
+                # Color cells based on their status
+                if cell.is_start_point:
+                    cell.color = RED
+                elif cell.is_end_point:
+                    cell.color =  GREEN
+                elif cell.is_obstacle:
+                    cell.color = GRAY
+                else:
+                    cell.color = WHITE
 
             # Draw cell and border
             pygame.draw.rect(screen, cell.color, cell_rect)
@@ -65,25 +78,31 @@ def main():
     clock = pygame.time.Clock()
 
     # State initialization
-    current_state = State.CHOOSE_START
+    current_state = State.CREATE_OBSTACLES
 
-    # Info bar
+    # Info bar initiialization
     pygame.font.init()
     font_size = 24
-    info_bar_text = current_state.value
     font = pygame.font.Font(None, 24)
 
     # A* Search initialization
     starting_point = None
     ending_point = None
 
-    # Main loop
     last_click_time = 0
+
+    # Main loop
     running = True
     while running:
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                if event.key == pygame.K_RETURN and current_state == State.CREATE_OBSTACLES:
+                    current_state = State.CHOOSE_START
 
         # Draw board and render info bar text
         screen.fill(WHITE)
@@ -94,6 +113,8 @@ def main():
 
         # State management
         if clicked_cell_coords:
+            if current_state == State.CREATE_OBSTACLES:
+                obstacle_coords = clicked_cell_coords
             if current_state == State.CHOOSE_START:
                 starting_point = clicked_cell_coords
                 current_state = State.CHOOSE_END
