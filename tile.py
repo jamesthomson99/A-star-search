@@ -31,5 +31,8 @@ class Tile:
     def calc_f(self):
         self.f = self.g + self.h
 
+    def set_index(self, val):
+        self.index = val
+
     def set_connection(self, tile):
         self.connection = tile

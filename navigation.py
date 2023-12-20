@@ -1,4 +1,5 @@
 import numpy as np
+from tile import Tile
 
 
 class AStarSearch():
@@ -22,7 +23,6 @@ class AStarSearch():
 
         # Perform next step as long as there are still tiles left to search
         if len(self.to_search) > 0:
-            print(self.to_search)
 
             # Find tile with lowest f
             current_tile = self.to_search[0]
@@ -41,6 +41,7 @@ class AStarSearch():
                     path.append(current_path_tile)
                     current_path_tile = current_path_tile.connection
 
+                path.append(self.start_tile)
                 return path
 
             # Get current tile neighbours and process each non-processed, non-obstacle neighbour
@@ -89,3 +90,15 @@ class AStarSearch():
         x1, y1, x2, y2 = index1[0], index1[1], index2[0], index2[1]
         h = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
         return h
+
+
+    # Function to print tile in nice, readable way
+    def print_tile(self, caption, input):
+        if isinstance(input, Tile):
+            print(caption, input.index)
+        elif isinstance(input, list) and isinstance(input[0], Tile):
+            result_string = caption
+            for item in input:
+                result_string += str(item.index) + ", "
+
+            print(result_string.rstrip(', '))
