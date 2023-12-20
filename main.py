@@ -1,6 +1,6 @@
 from tile import Tile
 from states import State
-from navigation import a_star 
+from navigation import AStarSearch 
 from constants import *
 import pygame
 import sys
@@ -11,6 +11,33 @@ import time
 def reload():
     main()
 
+
+# Function to get the index of a cell from the mouse click coordinates
+def get_clicked_cell_index(mouse_click):
+    
+    if not mouse_click:
+        return None
+
+    col = (mouse_click[0]) // (CELL_SIZE + CELL_BORDER)
+    row = (mouse_click[1]) // (CELL_SIZE + CELL_BORDER)
+    
+    return (int(row), int(col))
+
+
+# Function to get the coordinates at the center of a cell from received cell index
+def get_cell_center_coordinates(index):
+    row = index[0]
+    col = index[1]
+    x = col * (CELL_SIZE + CELL_BORDER) + CELL_SIZE // 2
+    y = row * (CELL_SIZE + CELL_BORDER) + CELL_SIZE // 2
+    return (x, y)
+
+
+# Function that draws the found path on the board
+def draw_path(screen, path):
+    if path:
+        for i in range(len(path) - 1):
+            pygame.draw.line(screen, BLUE, get_cell_center_coordinates(path[i].index), get_cell_center_coordinates(path[i+1].index), width=2)
 
 # Function to draw board on screen with pygame
 def draw_board(screen, board, last_click_time, current_state):
@@ -67,7 +94,10 @@ def draw_board(screen, board, last_click_time, current_state):
             pygame.draw.rect(screen, cell.color, cell_rect)
             pygame.draw.rect(screen, BLACK, cell_rect, cell_border_size)
 
-    return last_click_time, clicked_cell_coords
+    # Get clicked cell index from clicked cell coordinates
+    clicked_cell_index = get_clicked_cell_index(clicked_cell_coords)
+
+    return last_click_time, clicked_cell_index
 
 
 def main():
@@ -78,6 +108,7 @@ def main():
         row = []
         for j in range(BOARD_DIMENSIONS[1]):
             tile = Tile()
+            tile.set_index((i, j))
             row.append(tile)
         board.append(row)
 
@@ -101,8 +132,11 @@ def main():
     # A* Search initialization
     starting_point = None
     ending_point = None
+    path = None
+    a_star_search = AStarSearch()
 
     last_click_time = 0
+    first_search_iteration = True
 
     # Main loop
     running = True
@@ -124,18 +158,30 @@ def main():
         text = font.render(current_state.value, True, BLACK)
         text_rect = text.get_rect(midleft=(10, window_size[1] - (INFO_BAR_HEIGHT / 2)))
         screen.blit(text, text_rect)
-        last_click_time, clicked_cell_coords = draw_board(screen, board, last_click_time, current_state)
+        last_click_time, clicked_cell_index = draw_board(screen, board, last_click_time, current_state)
 
         # State management
-        if clicked_cell_coords:
+        if clicked_cell_index:
             if current_state == State.CREATE_OBSTACLES:
-                obstacle_coords = clicked_cell_coords
+                obstacle_coords = clicked_cell_index
             if current_state == State.CHOOSE_START:
-                starting_point = clicked_cell_coords
+                starting_point = clicked_cell_index
                 current_state = State.CHOOSE_END
             elif current_state == State.CHOOSE_END:
-                ending_point = clicked_cell_coords
+                ending_point = clicked_cell_index
                 current_state = State.NAVIGATING
+        
+        if current_state == State.NAVIGATING:
+            # If first iteration in navigation state, set the start and end tiles
+            if first_search_iteration:
+                a_star_search.initialize(board[starting_point[0]][starting_point[1]], board[ending_point[0]][ending_point[1]])
+                first_search_iteration = False
+            path = a_star_search.step(board)
+            # If a path is returned, route has been found
+            if path:
+                current_state = State.DONE
+
+        draw_path(screen, path)
 
         pygame.display.flip()
         clock.tick(60)
