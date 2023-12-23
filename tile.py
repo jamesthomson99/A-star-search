@@ -15,12 +15,25 @@ class Tile:
 
     def toggle_is_start_point(self):
         self.is_start_point = not self.is_start_point
+        if self.is_start_point:
+            self.color = RED
+        else: 
+            self.color = WHITE
 
     def toggle_is_end_point(self):
         self.is_end_point = not self.is_end_point
+        if self.is_end_point:
+            self.color = GREEN
+        else: 
+            self.color = WHITE
+
 
     def toggle_is_obstacle(self):
         self.is_obstacle = not self.is_obstacle
+        if self.is_obstacle:
+            self.color = BLACK
+        else: 
+            self.color = WHITE
 
     def set_g(self, val):
         self.g = val
