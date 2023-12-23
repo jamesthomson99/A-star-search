@@ -1,5 +1,6 @@
 import numpy as np
 from tile import Tile
+from constants import *
 
 
 class AStarSearch():
@@ -31,6 +32,8 @@ class AStarSearch():
                     current_tile = t
 
             self.processed.append(current_tile)
+            if not (current_tile == self.start_tile or current_tile == self.end_tile):
+                current_tile.color = GRAY
             self.to_search.remove(current_tile)
 
             # If the current tile is the end tile, find the path using established connections and return path
@@ -59,6 +62,8 @@ class AStarSearch():
                     if not in_search:
                         neighbour.set_h(self.calculate_distance(neighbour, self.end_tile))
                         self.to_search.append(neighbour)
+                        if not (neighbour == self.start_tile or neighbour == self.end_tile):
+                            neighbour.color = LIGHT_GRAY
 
             return None   
 

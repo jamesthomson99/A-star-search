@@ -1,4 +1,5 @@
 import math
+from constants import *
 
 class Tile:
     def __init__(self):
@@ -10,6 +11,7 @@ class Tile:
         self.is_end_point = False
         self.is_obstacle = False
         self.connection = None
+        self.color = WHITE
 
     def toggle_is_start_point(self):
         self.is_start_point = not self.is_start_point
