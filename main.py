@@ -37,7 +37,7 @@ def get_cell_center_coordinates(index):
 def draw_path(screen, path):
     if path:
         for i in range(len(path) - 1):
-            pygame.draw.line(screen, BLUE, get_cell_center_coordinates(path[i].index), get_cell_center_coordinates(path[i+1].index), width=2)
+            pygame.draw.line(screen, BLUE, get_cell_center_coordinates(path[i].index), get_cell_center_coordinates(path[i+1].index), width=3)
 
 # Function to draw board on screen with pygame
 def draw_board(screen, board, last_click_time, current_state):
@@ -68,27 +68,20 @@ def draw_board(screen, board, last_click_time, current_state):
                         valid_click_occured = False
                         if current_state == State.CREATE_OBSTACLES:
                             cell.toggle_is_obstacle()
+                            cell.color = BLACK
                             valid_click_occured = True
                         elif current_state == State.CHOOSE_START and not cell.is_obstacle:
                             cell.toggle_is_start_point()
+                            cell.color = RED
                             valid_click_occured = True
                         elif current_state == State.CHOOSE_END and not cell.is_obstacle and not cell.is_start_point:
                             cell.toggle_is_end_point()
+                            cell.color = GREEN
                             valid_click_occured = True
                         # Check if a valid click on a cell occured and note the coordinates of the click
                         if valid_click_occured:
                             last_click_time = current_time
                             clicked_cell_coords = (mouse_x, mouse_y)
-    
-                # Color cells based on their status
-                if cell.is_start_point:
-                    cell.color = RED
-                elif cell.is_end_point:
-                    cell.color =  GREEN
-                elif cell.is_obstacle:
-                    cell.color = GRAY
-                else:
-                    cell.color = WHITE
 
             # Draw cell and border
             pygame.draw.rect(screen, cell.color, cell_rect)
