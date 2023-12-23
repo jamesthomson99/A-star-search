@@ -68,15 +68,12 @@ def draw_board(screen, board, last_click_time, current_state):
                         valid_click_occured = False
                         if current_state == State.CREATE_OBSTACLES:
                             cell.toggle_is_obstacle()
-                            cell.color = BLACK
                             valid_click_occured = True
                         elif current_state == State.CHOOSE_START and not cell.is_obstacle:
-                            cell.toggle_is_start_point()
-                            cell.color = RED
+                            cell.toggle_is_start_point()                            
                             valid_click_occured = True
                         elif current_state == State.CHOOSE_END and not cell.is_obstacle and not cell.is_start_point:
                             cell.toggle_is_end_point()
-                            cell.color = GREEN
                             valid_click_occured = True
                         # Check if a valid click on a cell occured and note the coordinates of the click
                         if valid_click_occured:
