@@ -25,12 +25,13 @@ class AStarSearch():
         # Perform next step as long as there are still tiles left to search
         if len(self.to_search) > 0:
 
-            # Find tile with lowest f
+            # Find tile in search list with lowest f
             current_tile = self.to_search[0]
             for t in self.to_search:
                 if t.f < current_tile.f or (t.f == current_tile.f and t.h < current_tile.h):
                     current_tile = t
 
+            # Add the current tile to the processed list and remove it from the search list
             self.processed.append(current_tile)
             if not (current_tile == self.start_tile or current_tile == self.end_tile):
                 current_tile.color = GRAY
@@ -47,18 +48,24 @@ class AStarSearch():
                 path.append(self.start_tile)
                 return path
 
-            # Get current tile neighbours and process each non-processed, non-obstacle neighbour
+            # Get current tile neighbours
             neighbours = self.get_neighbours(board, current_tile)
 
+            # For each neighbor that isn't an obstacle and hasn't been processed
             for neighbour in [t for t in neighbours if not t.is_obstacle and t not in self.processed]:
+                # Check if current neighbor is in to_search list 
                 in_search = neighbour in self.to_search
 
+                # Get total cost from start node to current neighbor
                 cost_to_neighbour = current_tile.g + self.calculate_distance(current_tile, neighbour)
 
+                # If current neighbor isn't in search list or the new cost to neighbor is less than the neighbor's G (distance from start)
                 if not in_search or cost_to_neighbour < neighbour.g:
+                    # Update neighbor with new G distance and set a connection between current tile and current neighbor
                     neighbour.set_g(cost_to_neighbour)
                     neighbour.set_connection(current_tile)
 
+                    # If current neighbor isn't in search list add it to search list and set it's H distance (estimated distance to end)
                     if not in_search:
                         neighbour.set_h(self.calculate_distance(neighbour, self.end_tile))
                         self.to_search.append(neighbour)

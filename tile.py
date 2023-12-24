@@ -13,12 +13,14 @@ class Tile:
         self.connection = None
         self.color = WHITE
 
+
     def toggle_is_start_point(self):
         self.is_start_point = not self.is_start_point
         if self.is_start_point:
             self.color = RED
         else: 
             self.color = WHITE
+
 
     def toggle_is_end_point(self):
         self.is_end_point = not self.is_end_point
@@ -35,19 +37,24 @@ class Tile:
         else: 
             self.color = WHITE
 
+
     def set_g(self, val):
         self.g = val
         self.calc_f()
+
 
     def set_h(self, val):
         self.h = val
         self.calc_f()
     
+    
     def calc_f(self):
         self.f = self.g + self.h
 
+
     def set_index(self, val):
         self.index = val
+
 
     def set_connection(self, tile):
         self.connection = tile

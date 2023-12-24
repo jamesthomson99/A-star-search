@@ -39,6 +39,7 @@ def draw_path(screen, path):
         for i in range(len(path) - 1):
             pygame.draw.line(screen, BLUE, get_cell_center_coordinates(path[i].index), get_cell_center_coordinates(path[i+1].index), width=3)
 
+
 # Function to draw board on screen with pygame
 def draw_board(screen, board, last_click_time, current_state):
 
